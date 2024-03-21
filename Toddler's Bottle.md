@@ -130,3 +130,26 @@ p.sendline(payload)
 
 p.interactive()
 ```
+
+## flag
+
+#### Solution:
+```python
+from os import system
+import subprocess
+
+system("upx -d flag")
+
+gdb_script = """
+break *main+39
+run
+x/s $rdx
+quit
+"""
+
+with open('gdb_script.gdb', 'w') as f:
+    f.write(gdb_script)
+
+system("gdb -q -x gdb_script.gdb ./flag")
+system("rm gdb_script.gdb")
+```
