@@ -155,3 +155,41 @@ with open('gdb_script.gdb', 'w') as f:
 system("gdb -q -x gdb_script.gdb ./flag")
 system("rm gdb_script.gdb")
 ```
+
+## random
+
+#### Code:
+
+```c
+#include <stdio.h>
+
+int main(){
+	unsigned int random;
+	random = rand();	// random value!
+
+	unsigned int key=0;
+	scanf("%d", &key);
+
+	if( (key ^ random) == 0xdeadbeef ){
+		printf("Good!\n");
+		system("/bin/cat flag");
+		return 0;
+	}
+
+	printf("Wrong, maybe you should try 2^32 cases.\n");
+	return 0;
+}
+```
+
+## Solution:
+
+```python
+from pwn import *
+
+vm = ssh("random", "pwnable.kr", 2222, "guest")
+
+p = vm.process("./random")
+p.sendline("3039230856") # Always rand() is 0x6b8b4567 because the code didn't set a seed, 0x6b8b4567 ^ 0xdeadbeef = 0xb526fb88 (3039230856)
+print(p.recvall())
+```
+
